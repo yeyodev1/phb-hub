@@ -49,7 +49,7 @@ const WORLDS: World[] = [
     claim: 'Medir',
     copy: 'Evaluaciones PHB que convierten síntomas, antecedentes y biomarcadores en prioridades claras.',
     cta: 'Evaluar mi salud',
-    href: EXTERNAL.evaluacion,
+    href: EXTERNAL.evaluate,
   },
   {
     key: 'actua',
@@ -238,7 +238,7 @@ function scrollToIntents() {
               learn="Dónde estás hoy y qué merece atención primero."
               duration="Desde 10 minutos"
               cta="Evaluar mi salud"
-              :href="EXTERNAL.evaluacion"
+              :href="EXTERNAL.evaluate"
             />
           </li>
           <li class="featured__item">

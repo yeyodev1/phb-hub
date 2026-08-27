@@ -96,7 +96,7 @@ const journeyCards: JourneyPathCard[] = [
     title: 'Evalúa tu salud con PHB',
     copy: 'Obtén una visión más estructurada de tus riesgos, antecedentes, biomarcadores y prioridades.',
     cta: 'Evaluar mi salud',
-    href: EXTERNAL.evaluacion,
+    href: EXTERNAL.evaluate,
   },
   {
     icon: 'fa-solid fa-bolt',

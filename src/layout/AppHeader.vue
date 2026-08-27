@@ -20,7 +20,7 @@ const NAV: NavItem[] = [
 ]
 
 const EXTERNOS = [
-  { label: 'Evalúate — PHB', href: EXTERNAL.evaluacion, icon: 'fa-solid fa-chart-simple' },
+  { label: 'Evalúate — PHB', href: EXTERNAL.evaluate, icon: 'fa-solid fa-chart-simple' },
   { label: 'Tienda', href: EXTERNAL.store, icon: 'fa-solid fa-bag-shopping' },
 ]
 

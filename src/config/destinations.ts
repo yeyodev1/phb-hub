@@ -3,7 +3,9 @@
  * El hub NO reimplementa evaluación ni tienda: enruta hacia ellos.
  */
 export const EXTERNAL = {
-  /** Evaluación PHB (app de evaluación ya en producción). */
+  /** Página de venta de las 7 evaluaciones PHB, en la tienda. */
+  evaluate: 'https://store.powerhousebiotech.com/evaluate',
+  /** La herramienta: el formulario que se llena. */
   evaluacion: 'https://evaluacion.powerhousebiotech.com/',
   /** Tienda: libros, guías, cursos y masterclasses. */
   store: 'https://store.powerhousebiotech.com/',

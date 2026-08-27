@@ -50,7 +50,7 @@ const CREDENTIALS = [
             Explorar programas
             <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
           </BaseButton>
-          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.evaluacion">
+          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.evaluate">
             <i class="fa-solid fa-chart-simple" aria-hidden="true"></i>
             Evaluar mi salud con PHB
           </BaseButton>

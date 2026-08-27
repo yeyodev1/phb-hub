@@ -257,7 +257,7 @@ function seleccionar(situacion: string) {
             <BaseButton
               variant="primary"
               size="md"
-              :href="EXTERNAL.evaluacion"
+              :href="EXTERNAL.store"
               block
             >
               Quiero este programa
@@ -317,10 +317,10 @@ function seleccionar(situacion: string) {
           Para ti, recomendamos <strong>{{ recomendacionSeleccionada.programa }}</strong>.
         </p>
         <div class="selector__ctas">
-          <BaseButton variant="primary" size="lg" :href="EXTERNAL.evaluacion">
+          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">
             Ayúdame a elegir
           </BaseButton>
-          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.evaluacion">
+          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.store">
             Hablar con PHB
           </BaseButton>
         </div>

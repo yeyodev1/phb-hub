@@ -18,8 +18,9 @@ export const INTENTS: Intent[] = [
     title: 'Quiero evaluar mi salud',
     description: 'Evaluaciones, biomarcadores e interpretación clínica.',
     stage: 'Evaluar',
-    destination: { kind: 'external', target: EXTERNAL.evaluacion },
-    ctaLabel: 'Ir a mi evaluación PHB',
+    // Primero la página que muestra las 7 evaluaciones; el formulario viene después.
+    destination: { kind: 'external', target: EXTERNAL.evaluate },
+    ctaLabel: 'Ver mis evaluaciones PHB',
   },
   {
     id: 'cambiar',
