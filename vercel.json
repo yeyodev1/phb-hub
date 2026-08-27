@@ -2,5 +2,13 @@
   "framework": "vite",
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "phb.juanromangarza.com" }],
+      "destination": "https://salud.powerhousebiotech.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
