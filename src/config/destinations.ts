@@ -11,9 +11,25 @@ export const EXTERNAL = {
   regenerativa: 'https://evaluacion.powerhousebiotech.com/',
 } as const
 
+const WA_NUMBER = '5215553518114'
+
+const waLink = (mensaje: string) =>
+  `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(mensaje)}`
+
 export const CONTACT = {
-  whatsapp: 'https://wa.me/5218180000000',
-  email: 'contacto@powerhousebiotech.com',
+  whatsappNumber: WA_NUMBER,
+  whatsappDisplay: '+52 1 55 5351 8114',
+  /** WhatsApp genérico del menú y el footer. */
+  whatsapp: waLink('Hola, vengo del sitio de Juan Román Garza × PHB y quiero más información.'),
+  /** Variantes con contexto para no llegar en frío al chat. */
+  whatsappConferencias: waLink(
+    'Hola, quiero información para contratar una conferencia de Juan Román Garza.',
+  ),
+  whatsappEmpresas: waLink(
+    'Hola, quiero llevar un programa de PHB Corporate Health a mi empresa.',
+  ),
+  waLink,
+  email: 'info@powerhousebiotech.com',
 } as const
 
 /** Ruta del ecosistema, visible en todo el sitio. */
