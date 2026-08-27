@@ -1,43 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import JourneyPath from '@/components/ui/JourneyPath.vue'
-import ResourceCard from '@/components/ui/ResourceCard.vue'
 import { EXTERNAL } from '@/config/destinations'
 
 /* ------------------------------------------------------------------ */
 /* Tipos                                                                */
 /* ------------------------------------------------------------------ */
-interface Resource {
-  format: string
+interface FreeResource {
   title: string
-  description: string
-  learn?: string
-  audience?: string
-  duration?: string
-  cta: string
-  href?: string
-  to?: string
-  badge?: string
-  /** temas asociados, usados por el buscador y los filtros de chips */
-  tags: string[]
-}
-
-type FilterKey =
-  | 'todos'
-  | 'libros'
-  | 'guias'
-  | 'cursos'
-  | 'masterclasses'
-  | 'biomarcadores'
-  | 'prevencion'
-  | 'regeneracion'
-  | 'longevidad'
-
-interface Filter {
-  key: FilterKey
-  label: string
 }
 
 interface TopicCard {
@@ -45,11 +16,7 @@ interface TopicCard {
   title: string
   copy: string
   cta: string
-  filter: FilterKey
-}
-
-interface FreeResource {
-  title: string
+  slug: string
 }
 
 interface JourneyPathCard {
@@ -63,177 +30,7 @@ interface JourneyPathCard {
 }
 
 /* ------------------------------------------------------------------ */
-/* 01. HERO — búsqueda y filtros                                       */
-/* ------------------------------------------------------------------ */
-const searchQuery = ref('')
-const activeFilter = ref<FilterKey>('todos')
-
-const filters: Filter[] = [
-  { key: 'todos', label: 'Todos' },
-  { key: 'libros', label: 'Libros' },
-  { key: 'guias', label: 'Guías' },
-  { key: 'cursos', label: 'Cursos' },
-  { key: 'masterclasses', label: 'Masterclasses' },
-  { key: 'biomarcadores', label: 'Biomarcadores' },
-  { key: 'prevencion', label: 'Prevención' },
-  { key: 'regeneracion', label: 'Regeneración' },
-  { key: 'longevidad', label: 'Longevidad' },
-]
-
-function selectFilter(key: FilterKey) {
-  activeFilter.value = key
-}
-
-function goToLibrary(key: FilterKey) {
-  selectFilter(key)
-  const el = document.getElementById('biblioteca')
-  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
-/* ------------------------------------------------------------------ */
-/* 02. BIBLIOTECA                                                       */
-/* ------------------------------------------------------------------ */
-const comienzaAqui: Resource[] = [
-  {
-    format: 'PDF / E-book',
-    title: 'Todavía no estoy tan mal',
-    description:
-      'Guía para reconocer las señales de deterioro que muchas veces normalizamos o postergamos.',
-    cta: 'Conocer más',
-    href: EXTERNAL.store,
-    badge: 'Más vendido',
-    tags: ['libros', 'prevencion'],
-  },
-  {
-    format: 'Guía digital',
-    title: '50 biomarcadores que deberías conocer',
-    description:
-      'Una guía práctica para comprender qué pueden decir tus análisis acerca de tu salud metabólica, cardiovascular, inflamatoria y funcional.',
-    learn:
-      'Cuáles son los principales indicadores que pueden ayudarte a entender tu estado metabólico, cardiovascular e inflamatorio.',
-    audience: 'Recibes estudios de laboratorio pero no sabes qué información importante buscar.',
-    duration: '42 páginas · Lectura 60 min',
-    cta: 'Quiero aprender',
-    href: EXTERNAL.store,
-    tags: ['guias', 'biomarcadores'],
-  },
-  {
-    format: 'Masterclass',
-    title: 'Cómo entender mejor tus análisis clínicos',
-    description:
-      'Aprende qué estás viendo cuando recibes tus resultados y qué preguntas deberías hacer antes de ignorarlos o interpretarlos por tu cuenta.',
-    cta: 'Ver masterclass',
-    href: EXTERNAL.store,
-    tags: ['masterclasses', 'biomarcadores'],
-  },
-]
-
-const masPopulares: Resource[] = [
-  {
-    format: 'Curso',
-    title: 'Prevenir antes de enfermar',
-    description:
-      'Un recorrido por los factores de riesgo que se acumulan en silencio, mucho antes de que aparezca un diagnóstico.',
-    learn: 'Cómo identificar riesgos acumulados antes de que se conviertan en enfermedad manifiesta.',
-    audience: 'Te sientes bien hoy, pero quieres entender qué estás construyendo a futuro.',
-    duration: '6 módulos · 3 horas',
-    cta: 'Quiero aprender',
-    href: EXTERNAL.store,
-    tags: ['cursos', 'prevencion'],
-  },
-  {
-    format: 'Guía digital',
-    title: 'Medicina conductual aplicada',
-    description:
-      'Por qué saber que necesitas cambiar no siempre significa que vas a hacerlo, y qué puedes hacer al respecto.',
-    learn: 'Los mecanismos detrás de la postergación y cómo diseñar cambios que sí se sostienen.',
-    audience: 'Ya sabes qué deberías cambiar, pero no logras que el cambio dure.',
-    duration: '28 páginas · Lectura 40 min',
-    cta: 'Quiero aprender',
-    href: EXTERNAL.store,
-    tags: ['guias'],
-  },
-  {
-    format: 'Masterclass',
-    title: 'Longevidad productiva',
-    description:
-      'Pensar más allá de vivir más años: cómo preservar energía, función y autonomía en el largo plazo.',
-    learn: 'Qué factores sostienen tu capacidad funcional y productiva con el paso del tiempo.',
-    audience: 'Te interesa envejecer con función, no solamente con más años.',
-    duration: '1 h 15 min',
-    cta: 'Ver masterclass',
-    href: EXTERNAL.store,
-    tags: ['masterclasses', 'longevidad'],
-  },
-]
-
-const nuevos: Resource[] = [
-  {
-    format: 'Curso',
-    title: 'Introducción a la medicina regenerativa',
-    description:
-      'Los fundamentos de un campo en expansión: qué es, qué promete y qué se sabe hoy con evidencia.',
-    learn: 'Los principios básicos de adaptación, reparación y regeneración celular.',
-    audience: 'Quieres entender el tema antes de considerar cualquier intervención.',
-    duration: '5 módulos · 2.5 horas',
-    cta: 'Quiero aprender',
-    href: EXTERNAL.store,
-    tags: ['cursos', 'regeneracion'],
-    badge: 'Nuevo',
-  },
-  {
-    format: 'Guía digital',
-    title: 'Psicología de la salud para pacientes',
-    description:
-      'Cómo influyen tus creencias, tu entorno y tus emociones en las decisiones que tomas sobre tu cuerpo.',
-    learn: 'De qué manera tu estado emocional condiciona tu adherencia y tus hábitos.',
-    audience: 'Sientes que la parte emocional pesa tanto como la física en tu salud.',
-    duration: '24 páginas · Lectura 35 min',
-    cta: 'Quiero aprender',
-    href: EXTERNAL.store,
-    tags: ['guias'],
-    badge: 'Nuevo',
-  },
-  {
-    format: 'Masterclass',
-    title: 'Health Intelligence: leer tu propio cuerpo',
-    description:
-      'Cómo convertir datos dispersos de salud en una imagen clara de dónde estás y hacia dónde vas.',
-    learn: 'Un método para conectar biomarcadores, hábitos y antecedentes en una sola lectura.',
-    audience: 'Tienes datos de salud, pero no una forma de interpretarlos en conjunto.',
-    duration: '55 min',
-    cta: 'Ver masterclass',
-    href: EXTERNAL.store,
-    tags: ['masterclasses', 'biomarcadores', 'longevidad'],
-    badge: 'Nuevo',
-  },
-]
-
-function matchesFilter(resource: Resource): boolean {
-  if (activeFilter.value === 'todos') return true
-  return resource.tags.includes(activeFilter.value)
-}
-
-function matchesSearch(resource: Resource): boolean {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return true
-  return (
-    resource.title.toLowerCase().includes(q) ||
-    resource.description.toLowerCase().includes(q) ||
-    resource.tags.some((tag) => tag.includes(q))
-  )
-}
-
-const comienzaAquiFiltrado = computed(() => comienzaAqui.filter((r) => matchesFilter(r) && matchesSearch(r)))
-const masPopularesFiltrado = computed(() => masPopulares.filter((r) => matchesFilter(r) && matchesSearch(r)))
-const nuevosFiltrado = computed(() => nuevos.filter((r) => matchesFilter(r) && matchesSearch(r)))
-
-const totalVisible = computed(
-  () => comienzaAquiFiltrado.value.length + masPopularesFiltrado.value.length + nuevosFiltrado.value.length,
-)
-
-/* ------------------------------------------------------------------ */
-/* 03. GRATUITOS                                                        */
+/* 02. GRATUITOS                                                        */
 /* ------------------------------------------------------------------ */
 const freeResources: FreeResource[] = [
   { title: 'Checklist: 20 señales de que deberías evaluar mejor tu salud' },
@@ -241,17 +38,8 @@ const freeResources: FreeResource[] = [
   { title: 'Evaluación: ¿Estoy realmente cuidando mi salud o solo reaccionando cuando algo sucede?' },
 ]
 
-const freeEmail = ref('')
-const freeWhatsapp = ref('')
-const sent = ref(false)
-
-function submitFreeForm() {
-  if (!freeEmail.value.trim()) return
-  sent.value = true
-}
-
 /* ------------------------------------------------------------------ */
-/* 04. ¿QUÉ QUIERES ENTENDER MEJOR?                                     */
+/* 03. ¿QUÉ QUIERES ENTENDER MEJOR?                                     */
 /* ------------------------------------------------------------------ */
 const topicCards: TopicCard[] = [
   {
@@ -259,42 +47,42 @@ const topicCards: TopicCard[] = [
     title: 'Mis biomarcadores',
     copy: 'Aprende qué información pueden aportar glucosa, insulina, HbA1c, inflamación, lípidos, función renal, hormonas y otros indicadores.',
     cta: 'Explorar biomarcadores',
-    filter: 'biomarcadores',
+    slug: 'biomarcadores',
   },
   {
     icon: 'fa-solid fa-heart-pulse',
     title: 'Mi riesgo de enfermedad',
     copy: 'Comprende cómo ciertos factores pueden acumularse durante años antes de convertirse en enfermedad manifiesta.',
     cta: 'Explorar prevención',
-    filter: 'prevencion',
+    slug: 'prevencion',
   },
   {
     icon: 'fa-solid fa-brain',
     title: 'Mi comportamiento',
     copy: 'Entiende por qué saber que necesitas cambiar no necesariamente significa que vas a hacerlo.',
     cta: 'Explorar medicina conductual',
-    filter: 'todos',
+    slug: 'comportamiento',
   },
   {
     icon: 'fa-solid fa-dna',
     title: 'Mi capacidad de recuperación',
     copy: 'Conoce los factores relacionados con adaptación, reparación, función y medicina regenerativa.',
     cta: 'Explorar regeneración',
-    filter: 'regeneracion',
+    slug: 'regeneracion',
   },
   {
     icon: 'fa-solid fa-hourglass-half',
     title: 'Mi longevidad',
     copy: 'Aprende a pensar más allá de vivir más años: preservar energía, función, autonomía y productividad.',
     cta: 'Explorar longevidad',
-    filter: 'longevidad',
+    slug: 'longevidad',
   },
   {
     icon: 'fa-solid fa-microscope',
     title: 'Nuevas tecnologías y tratamientos',
     copy: 'Explora avances que estoy estudiando en prevención, diagnóstico, tecnología, terapias y medicina regenerativa.',
     cta: 'Explorar innovación',
-    filter: 'todos',
+    slug: 'innovacion',
   },
 ]
 
@@ -345,115 +133,14 @@ const journeyCards: JourneyPathCard[] = [
         </p>
 
         <div class="hero__ctas">
-          <BaseButton variant="primary" size="lg" href="#biblioteca">Explorar biblioteca</BaseButton>
-          <BaseButton variant="ghost" size="lg" href="#gratuitos">Ver recursos gratuitos</BaseButton>
-        </div>
-
-        <div class="hero__search">
-          <input
-            v-model="searchQuery"
-            type="search"
-            class="hero__search-input"
-            placeholder="¿Qué quieres aprender hoy? Diabetes, inflamación, células madre, biomarcadores, longevidad…"
-            aria-label="Buscar en la biblioteca"
-          />
-        </div>
-
-        <div class="hero__filters" role="group" aria-label="Filtrar biblioteca">
-          <button
-            v-for="f in filters"
-            :key="f.key"
-            type="button"
-            class="hero__chip"
-            :class="{ 'hero__chip--active': activeFilter === f.key }"
-            @click="selectFilter(f.key)"
-          >
-            {{ f.label }}
-          </button>
+          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">Explorar biblioteca</BaseButton>
+          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.store">Ver recursos gratuitos</BaseButton>
         </div>
       </div>
     </section>
 
-    <!-- 02. EXPLORA LA BIBLIOTECA -->
-    <section id="biblioteca" class="library">
-      <div class="library__container">
-        <SectionHeader
-          eyebrow="Biblioteca"
-          title="Explora la biblioteca"
-          subtitle="Libros, guías, cursos y masterclasses organizados por dónde estás en tu proceso de aprendizaje."
-        />
-
-        <p v-if="!totalVisible" class="library__empty">
-          No encontramos recursos con esa búsqueda o filtro. Prueba con otro término.
-        </p>
-
-        <div v-if="comienzaAquiFiltrado.length" class="library__group">
-          <h3 class="library__group-title">Comienza aquí</h3>
-          <div class="library__row">
-            <ResourceCard
-              v-for="r in comienzaAquiFiltrado"
-              :key="r.title"
-              class="library__item"
-              :format="r.format"
-              :title="r.title"
-              :description="r.description"
-              :learn="r.learn"
-              :audience="r.audience"
-              :duration="r.duration"
-              :cta="r.cta"
-              :href="r.href"
-              :to="r.to"
-              :badge="r.badge"
-            />
-          </div>
-        </div>
-
-        <div v-if="masPopularesFiltrado.length" class="library__group">
-          <h3 class="library__group-title">Más populares</h3>
-          <div class="library__row">
-            <ResourceCard
-              v-for="r in masPopularesFiltrado"
-              :key="r.title"
-              class="library__item"
-              :format="r.format"
-              :title="r.title"
-              :description="r.description"
-              :learn="r.learn"
-              :audience="r.audience"
-              :duration="r.duration"
-              :cta="r.cta"
-              :href="r.href"
-              :to="r.to"
-              :badge="r.badge"
-            />
-          </div>
-        </div>
-
-        <div v-if="nuevosFiltrado.length" class="library__group">
-          <h3 class="library__group-title">Nuevos</h3>
-          <div class="library__row">
-            <ResourceCard
-              v-for="r in nuevosFiltrado"
-              :key="r.title"
-              class="library__item"
-              :format="r.format"
-              :title="r.title"
-              :description="r.description"
-              :learn="r.learn"
-              :audience="r.audience"
-              :duration="r.duration"
-              :cta="r.cta"
-              :href="r.href"
-              :to="r.to"
-              :badge="r.badge"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03. GRATUITOS -->
-    <section id="gratuitos" class="free">
+    <!-- 02. GRATUITOS -->
+    <section class="free">
       <div class="free__container">
         <SectionHeader
           eyebrow="Sin costo"
@@ -468,55 +155,50 @@ const journeyCards: JourneyPathCard[] = [
           </div>
         </div>
 
-        <div class="free__form-wrap">
-          <form v-if="!sent" class="free__form" @submit.prevent="submitFreeForm">
-            <input
-              v-model="freeEmail"
-              type="email"
-              required
-              class="free__input"
-              placeholder="Tu correo electrónico"
-              aria-label="Correo electrónico"
-            />
-            <input
-              v-model="freeWhatsapp"
-              type="tel"
-              class="free__input"
-              placeholder="Tu WhatsApp (opcional)"
-              aria-label="WhatsApp"
-            />
-            <BaseButton variant="primary" size="lg">Descargar gratis</BaseButton>
-          </form>
-          <p v-else class="free__confirm">
-            Listo. Revisa tu correo: te enviamos tus recursos gratuitos en los próximos minutos.
-          </p>
-        </div>
+        <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">Ver recursos gratuitos</BaseButton>
       </div>
     </section>
 
-    <!-- 04. ¿QUÉ QUIERES ENTENDER MEJOR? -->
+    <!-- 03. ¿QUÉ QUIERES ENTENDER MEJOR? -->
     <section class="topics">
       <div class="topics__container">
         <SectionHeader
           eyebrow="Explora por tema"
           title="¿Qué quieres entender mejor?"
-          subtitle="Elige un tema y te llevamos directo a los recursos relacionados en la biblioteca."
+          subtitle="Elige un tema y te llevamos directo a los recursos relacionados en la tienda."
         />
 
         <div class="topics__row">
-          <button
+          <a
             v-for="t in topicCards"
             :key="t.title"
-            type="button"
             class="topics__card"
-            @click="goToLibrary(t.filter)"
+            :href="`${EXTERNAL.store}/tienda?theme=${t.slug}`"
+            target="_blank"
+            rel="noopener"
           >
             <i class="topics__icon" :class="t.icon" aria-hidden="true"></i>
             <h3 class="topics__title">{{ t.title }}</h3>
             <p class="topics__copy">{{ t.copy }}</p>
             <span class="topics__cta">{{ t.cta }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
-          </button>
+          </a>
         </div>
+      </div>
+    </section>
+
+    <!-- 04. LA TIENDA -->
+    <section class="store-banner">
+      <div class="store-banner__container">
+        <SectionHeader
+          eyebrow="Tienda PHB"
+          title="La biblioteca completa vive en la tienda."
+          subtitle="Libros, guías, masterclasses y cursos, con su precio, su formato y lo que vas a aprender en cada uno."
+          align="center"
+        >
+          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">
+            Ir a la tienda <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          </BaseButton>
+        </SectionHeader>
       </div>
     </section>
 
@@ -594,110 +276,9 @@ const journeyCards: JourneyPathCard[] = [
     flex-wrap: wrap;
     gap: $sp-3;
   }
-
-  &__search {
-    width: 100%;
-  }
-
-  &__search-input {
-    width: 100%;
-    background: rgba($surface, 0.7);
-    border: 1px solid $line-strong;
-    border-radius: $r-pill;
-    padding: $sp-4 $sp-5;
-    color: $white;
-    font-family: $font-body;
-    font-size: 0.95rem;
-    @include focus-ring;
-
-    &::placeholder {
-      color: $muted;
-    }
-  }
-
-  &__filters {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-2;
-  }
-
-  &__chip {
-    font-family: $font-accent;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: $muted-strong;
-    background: rgba($white, 0.04);
-    border: 1px solid $line;
-    border-radius: $r-pill;
-    padding: 0.55rem 1.1rem;
-    transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
-    @include focus-ring;
-
-    &:hover {
-      border-color: $cyan;
-      color: $white;
-    }
-
-    &--active {
-      background: $grad-accent;
-      border-color: transparent;
-      color: $ink;
-    }
-  }
 }
 
-/* ---------- 02. BIBLIOTECA ---------- */
-.library {
-  @include section-pad;
-
-  &__container {
-    @include container;
-    @include col($sp-7);
-  }
-
-  &__empty {
-    @include body-lg;
-  }
-
-  &__group {
-    @include col($sp-5);
-  }
-
-  &__group-title {
-    font-family: $font-display;
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: $white;
-  }
-
-  &__row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-5;
-  }
-
-  &__item {
-    flex: 1 1 100%;
-
-    @include from($bp-md) {
-      flex: 1 1 calc(50% - #{$sp-5} / 2);
-    }
-
-    @include from($bp-lg) {
-      flex: 1 1 calc(33.333% - #{$sp-5} * 2 / 3);
-    }
-
-    // acento de autoridad: badges destacadas ("Más vendido", "Nuevo") en dorado
-    :deep(.resource__badge) {
-      color: $gold;
-      border-color: rgba($gold, 0.4);
-    }
-  }
-}
-
-/* ---------- 03. GRATUITOS ---------- */
+/* ---------- 02. GRATUITOS ---------- */
 .free {
   @include section-pad;
   background: $navy-soft;
@@ -705,6 +286,7 @@ const journeyCards: JourneyPathCard[] = [
   &__container {
     @include container;
     @include col($sp-6);
+    align-items: flex-start;
   }
 
   &__row {
@@ -712,6 +294,7 @@ const journeyCards: JourneyPathCard[] = [
     flex-direction: row;
     flex-wrap: wrap;
     gap: $sp-4;
+    width: 100%;
   }
 
   &__card {
@@ -736,54 +319,9 @@ const journeyCards: JourneyPathCard[] = [
     color: $muted-strong;
     font-weight: 500;
   }
-
-  &__form-wrap {
-    @include card-surface;
-    padding: $sp-6;
-  }
-
-  &__form {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-3;
-    align-items: stretch;
-
-    > * {
-      flex: 1 1 100%;
-    }
-
-    @include from($bp-md) {
-      align-items: center;
-
-      > * {
-        flex: 1 1 calc(33.333% - #{$sp-3} * 2 / 3);
-      }
-    }
-  }
-
-  &__input {
-    background: rgba($ink, 0.5);
-    border: 1px solid $line-strong;
-    border-radius: $r-md;
-    padding: $sp-4;
-    color: $white;
-    font-family: $font-body;
-    font-size: 0.9rem;
-    @include focus-ring;
-
-    &::placeholder {
-      color: $muted;
-    }
-  }
-
-  &__confirm {
-    @include body-lg;
-    color: $accent;
-  }
 }
 
-/* ---------- 04. TOPICS ---------- */
+/* ---------- 03. TOPICS ---------- */
 .topics {
   @include section-pad;
   // sección clara: rompe el "todo azul" y da respiro visual al recorrido oscuro
@@ -868,6 +406,25 @@ const journeyCards: JourneyPathCard[] = [
     font-size: 0.85rem;
     color: $blue;
     padding-top: $sp-2;
+  }
+}
+
+/* ---------- 04. LA TIENDA ---------- */
+.store-banner {
+  @include section-pad;
+
+  &__container {
+    @include container;
+    display: flex;
+    justify-content: center;
+  }
+
+  :deep(.section-header) {
+    max-width: 52ch;
+  }
+
+  :deep(.section-header__title) {
+    color: $white;
   }
 }
 
