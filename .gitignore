@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+*.local
+.vercel
+vite.config.js
+.DS_Store
