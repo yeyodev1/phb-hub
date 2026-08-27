@@ -5,3 +5,4 @@ dist
 .vercel
 vite.config.js
 .DS_Store
+node-compile-cache
