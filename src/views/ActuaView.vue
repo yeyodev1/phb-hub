@@ -107,7 +107,7 @@ const programas: Programa[] = [
   {
     id: 'actua-diabetes',
     nombre: 'ACTÚA Diabetes',
-    icon: 'fa-solid fa-droplet',
+    icon: 'fa-solid fa-chart-line',
     tagline: 'Acompañamiento conductual para vivir con diabetes con mayor control.',
     idealPara: 'Personas que viven con diabetes y buscan mayor control diario.',
     incluye: [

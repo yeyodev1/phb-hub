@@ -255,7 +255,7 @@ function submitFreeForm() {
 /* ------------------------------------------------------------------ */
 const topicCards: TopicCard[] = [
   {
-    icon: 'fa-solid fa-droplet',
+    icon: 'fa-solid fa-vial',
     title: 'Mis biomarcadores',
     copy: 'Aprende qué información pueden aportar glucosa, insulina, HbA1c, inflamación, lípidos, función renal, hormonas y otros indicadores.',
     cta: 'Explorar biomarcadores',
