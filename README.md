@@ -61,6 +61,26 @@ src/
 └─ views/             Home, Aprende, Actua, Regeneracion, Conferencias, Empresas
 ```
 
+## Dominios y DNS
+
+| Dominio | Rol |
+|---|---|
+| `salud.powerhousebiotech.com` | Canónico. Misma raíz que `evaluacion.` y `store.`, así el funnel es same-site y se mide sin cross-domain linker. |
+| `phb.juanromangarza.com` | Alias dictable desde escenario. Hace **301** al canónico vía `vercel.json`. |
+
+Ambas zonas viven en Cloudflare. Los registros son CNAME a `cname.vercel-dns.com` **con el proxy desactivado (nube gris)** — si Cloudflare proxea, Vercel no puede verificar el dominio ni emitir el certificado.
+
+Para crearlos:
+
+```bash
+CF_API_TOKEN=xxxxx node scripts/setup-dns.mjs --dry-run   # muestra qué haría
+CF_API_TOKEN=xxxxx node scripts/setup-dns.mjs             # los crea
+```
+
+El token solo necesita **Zone → DNS → Edit** sobre esas dos zonas ([crear token](https://dash.cloudflare.com/profile/api-tokens)).
+
+> No delegues los nameservers a Vercel: ambas zonas tienen MX activos (Microsoft 365 en `powerhousebiotech.com`, reenvío de Namecheap en `juanromangarza.com`) y mover los NS tumbaría el correo.
+
 ## Aviso
 
 El contenido del sitio es educativo e informativo y no sustituye consulta, diagnóstico ni tratamiento médico profesional. Los programas clínicos regenerativos nunca se presentan con CTA de compra: el CTA es *Evaluar mi candidatura*.
