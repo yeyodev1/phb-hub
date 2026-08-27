@@ -1,0 +1,58 @@
+// ===========================================================
+//  JUAN ROMÁN GARZA × PHB — Sistema de color unificado
+//  60% núcleo oscuro (autoridad) / 30% azul (estructura) / 10% acento (acción)
+// ===========================================================
+
+// --- Núcleo (60%) ---
+$ink: #06091a;
+$navy: #0f1330;
+$navy-soft: #171846; // PHB navy
+$surface: #1b2140;
+$surface-2: #232b4f;
+
+// --- Estructura (30%) ---
+$blue: #1278f3; // PHB blue
+$blue-jrg: #2094d2; // JRG primary
+$cyan: #21bcfb; // PHB CTA
+$accent: #18e7f0; // PHB accent
+
+// --- Acción / autoridad cálida (10%) ---
+$green: #2bbb92; // JRG secondary
+$gold: #c9a227; // latón: autoridad, contrasta el azul
+$gold-soft: #e3c35a;
+$bone: #f4f1ea; // secciones claras (rompe el "todo azul")
+$bone-dim: #e6e1d6;
+$bone-line: #d8d2c5;
+
+// --- Neutros ---
+$white: #fefefe;
+$cloud: #eef2f9;
+$muted: #a7b0c8;
+$muted-strong: #d5dcec;
+$line: rgba(#fefefe, 0.1);
+$line-strong: rgba(#fefefe, 0.18);
+
+// --- Alias heredados del scaffold (no romper imports existentes) ---
+$primary: $blue-jrg;
+$primary-dark: #010d27;
+$primary-light: $white;
+$secondary: $green;
+$text-light: $white;
+$text-secondary: #6b7280;
+
+// --- Alertas ---
+$alert-warning: #f59e0b;
+$alert-info: #3b82f6;
+$alert-success: #10b981;
+$alert-error: #ef4444;
+$alert-warning-bg: rgba($alert-warning, 0.1);
+$alert-info-bg: rgba($alert-info, 0.1);
+$alert-success-bg: rgba($alert-success, 0.1);
+$alert-error-bg: rgba($alert-error, 0.1);
+
+// --- Gradientes de marca ---
+$grad-cta: linear-gradient(120deg, $cyan 0%, $blue 100%);
+$grad-accent: linear-gradient(120deg, $accent 0%, $cyan 60%, $blue 100%);
+$grad-veil: linear-gradient(180deg, rgba($ink, 0) 0%, rgba($ink, 0.92) 78%, $ink 100%);
+$grad-gold: linear-gradient(120deg, $gold-soft 0%, $gold 100%);
+$grad-portrait: linear-gradient(180deg, rgba($ink, 0) 38%, rgba($ink, 0.9) 92%);
