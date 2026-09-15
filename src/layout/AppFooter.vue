@@ -22,6 +22,7 @@ import { LOGOS } from '@/config/media'
         <nav class="footer__col">
           <h3>Ecosistema</h3>
           <router-link to="/aprende">Aprende</router-link>
+          <router-link to="/formate">Fórmate</router-link>
           <a :href="EXTERNAL.evaluate" target="_blank" rel="noopener">Evalúate — PHB</a>
           <router-link to="/actua">Actúa</router-link>
           <router-link to="/regeneracion">Regeneración</router-link>

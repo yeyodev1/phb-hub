@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import type { IntentId, LeadPayload, QuizQuestion } from '@/types'
 import { QUIZ, getIntent } from '@/data/intents'
+import { sendLead } from '@/services/leads'
 
 const STORAGE_KEY = 'phb_journey'
 
@@ -76,14 +77,7 @@ export const useJourneyStore = defineStore('journey', () => {
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-      const endpoint = import.meta.env.VITE_LEADS_URL
-      if (endpoint) {
-        await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-      }
+      await sendLead(payload)
     } catch {
       // El lead ya quedó en localStorage; no bloqueamos el recorrido del usuario.
     } finally {

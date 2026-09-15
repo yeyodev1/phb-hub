@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
-import { EXTERNAL, JOURNEY } from '@/config/destinations'
-import { JUAN, LOGOS, PRESS } from '@/config/media'
-
-const emit = defineEmits<{ (e: 'explore'): void }>()
-
-const CREDENTIALS = [
-  'Psicología de la Salud',
-  'Medicina Conductual',
-  'Prevención',
-  'Regeneración',
-]
+import { EXTERNAL } from '@/config/destinations'
+import { JUAN, LOGOS } from '@/config/media'
 </script>
 
 <template>
@@ -22,39 +13,37 @@ const CREDENTIALS = [
         <img :src="LOGOS.jrg" alt="Juan Román Garza" class="hero__logo" />
 
         <p class="hero__eyebrow">
-          Juan Román Garza
-          <span class="hero__x">×</span>
-          <span class="hero__phb">PowerHouse Biotech</span>
+          Psicología de la Salud · Medicina Conductual · Regeneración · Longevidad Productiva
         </p>
 
         <h1 class="hero__headline">
-          Tu salud no cambia cuando sabes más.
-          <span>Cambia cuando empiezas a tomar mejores decisiones.</span>
+          Decisiones Inteligentes para tu Salud.
+          <span>Simplificadas.</span>
         </h1>
 
         <p class="hero__sub">
-          Conferencias, cursos, evaluaciones, herramientas y programas diseñados para
-          ayudarte a entender tu salud, actuar oportunamente y construir una estrategia
-          personal de prevención y regeneración.
+          He reunido años de estudio, experiencia y exploración en salud, conducta, tecnología
+          y medicina regenerativa para convertirlos en conferencias, cursos, libros,
+          evaluaciones, herramientas y programas que te ayuden a entender mejor tu salud,
+          actuar con mayor inteligencia y construir una estrategia personal de prevención,
+          regeneración y longevidad.
         </p>
 
-        <ul class="hero__credentials">
-          <li v-for="c in CREDENTIALS" :key="c">
-            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-            {{ c }}
-          </li>
-        </ul>
-
         <div class="hero__actions">
-          <BaseButton size="lg" @click="emit('explore')">
-            Explorar programas
+          <BaseButton size="lg" :href="EXTERNAL.catalog">
+            Explorar recursos
             <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
           </BaseButton>
           <BaseButton variant="ghost" size="lg" :href="EXTERNAL.evaluate">
             <i class="fa-solid fa-chart-simple" aria-hidden="true"></i>
-            Evaluar mi salud con PHB
+            Evaluar mi salud
           </BaseButton>
         </div>
+
+        <p class="hero__mission">
+          Mi misión es simplificar decisiones inteligentes de salud para ayudarte a vivir más
+          años con salud, energía, autonomía y propósito.
+        </p>
       </div>
 
       <figure class="hero__portrait">
@@ -67,32 +56,10 @@ const CREDENTIALS = [
         <figcaption>
           <span class="hero__portrait-name">Juan Román Garza</span>
           <span class="hero__portrait-role">
-            Psicología de la Salud · Medicina Conductual · Longevidad Productiva
+            Psicología de la Salud · Medicina Conductual · Regeneración · Longevidad Productiva
           </span>
         </figcaption>
       </figure>
-    </div>
-
-    <div class="hero__method-wrap">
-      <ul class="hero__method">
-        <li v-for="(s, i) in JOURNEY" :key="s">
-          <span>{{ s }}</span>
-          <i
-            v-if="i < JOURNEY.length - 1"
-            class="fa-solid fa-chevron-right hero__method-sep"
-            aria-hidden="true"
-          ></i>
-        </li>
-      </ul>
-    </div>
-
-    <div class="hero__press">
-      <p class="hero__press-label">Reconocido en</p>
-      <ul class="hero__press-list">
-        <li v-for="(logo, i) in PRESS" :key="logo">
-          <img :src="logo" :alt="`Medio ${i + 1}`" height="26" />
-        </li>
-      </ul>
     </div>
   </section>
 </template>
@@ -124,7 +91,7 @@ const CREDENTIALS = [
     display: flex;
     flex-direction: column;
     gap: $sp-6;
-    padding-block: $sp-7 $sp-6;
+    padding-block: $sp-7;
 
     @include from($bp-lg) {
       flex-direction: row;
@@ -138,9 +105,10 @@ const CREDENTIALS = [
     @include col($sp-4);
     flex: 1 1 auto;
 
+    // Hero 55/45: copy + CTAs a la izquierda, fotografía editorial a la derecha.
     @include from($bp-lg) {
-      flex: 1 1 56%;
-      max-width: 56%;
+      flex: 1 1 55%;
+      max-width: 55%;
     }
   }
 
@@ -151,26 +119,12 @@ const CREDENTIALS = [
   }
 
   &__eyebrow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: $sp-3;
     font-family: $font-accent;
     font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    line-height: 1.6;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: $gold-soft;
-  }
-
-  &__x {
-    color: rgba($white, 0.4);
-  }
-
-  &__phb {
-    font-family: $font-accent;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: $cyan;
   }
 
   &__headline {
@@ -190,28 +144,7 @@ const CREDENTIALS = [
 
   &__sub {
     @include body-lg;
-    max-width: 58ch;
-  }
-
-  &__credentials {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-2 $sp-4;
-
-    li {
-      display: flex;
-      align-items: center;
-      gap: $sp-2;
-      font-size: 0.82rem;
-      color: $muted-strong;
-    }
-
-    i {
-      font-size: 0.8rem;
-      line-height: 1;
-      color: $gold;
-    }
+    max-width: 60ch;
   }
 
   &__actions {
@@ -228,6 +161,17 @@ const CREDENTIALS = [
     }
   }
 
+  &__mission {
+    padding-left: $sp-4;
+    border-left: 2px solid $gold;
+    font-family: $font-display;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: $white;
+    max-width: 56ch;
+  }
+
   &__portrait {
     position: relative;
     flex: 1 1 auto;
@@ -237,8 +181,8 @@ const CREDENTIALS = [
     box-shadow: 0 24px 60px rgba($ink, 0.6);
 
     @include from($bp-lg) {
-      flex: 1 1 44%;
-      max-width: 44%;
+      flex: 1 1 45%;
+      max-width: 45%;
     }
 
     img {
@@ -272,80 +216,6 @@ const CREDENTIALS = [
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: $gold-soft;
-  }
-
-  &__method-wrap {
-    @include container;
-    position: relative;
-  }
-
-  &__method {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $sp-3;
-    padding-block: $sp-5;
-    border-top: 1px solid $line;
-
-    li {
-      display: flex;
-      align-items: center;
-      gap: $sp-3;
-      font-family: $font-accent;
-      font-size: 0.68rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba($muted-strong, 0.85);
-    }
-  }
-
-  &__method-sep {
-    font-size: 0.55rem;
-    color: rgba($gold, 0.65);
-  }
-
-  &__press {
-    @include container;
-    @include col($sp-4);
-    position: relative;
-    padding-bottom: $sp-7;
-  }
-
-  &__press-label {
-    font-family: $font-accent;
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba($muted, 0.7);
-  }
-
-  &__press-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $sp-4 $sp-6;
-    min-height: 26px;
-
-    img {
-      height: 20px;
-      width: auto;
-      max-width: 130px;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-      opacity: 0.5;
-      transition: opacity 0.2s ease;
-
-      &:hover {
-        opacity: 1;
-      }
-
-      @include from($bp-md) {
-        height: 26px;
-        max-width: 160px;
-      }
-    }
   }
 }
 </style>

@@ -2,8 +2,7 @@
 import { ref, computed } from 'vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
-import JourneyPath from '@/components/ui/JourneyPath.vue'
-import { EXTERNAL } from '@/config/destinations'
+import { CONTACT, storeProduct } from '@/config/destinations'
 
 interface MicroBenefit {
   title: string
@@ -42,6 +41,8 @@ const barriers: Barrier[] = [
 
 interface Programa {
   id: string
+  /** Slug del producto en la tienda: el botón lleva directo a comprarlo. */
+  slug: string
   nombre: string
   tagline: string
   idealPara: string
@@ -53,6 +54,7 @@ interface Programa {
 const programas: Programa[] = [
   {
     id: 'actua-30',
+    slug: 'phb-actua-30',
     nombre: 'ACTÚA 30',
     icon: 'fa-solid fa-calendar-check',
     tagline: 'Programa base. 30 días para convertir conciencia en acción.',
@@ -67,6 +69,7 @@ const programas: Programa[] = [
   },
   {
     id: 'actua-metabolico',
+    slug: 'phb-actua-metabolico',
     nombre: 'ACTÚA Metabólico',
     icon: 'fa-solid fa-fire-flame-simple',
     tagline: 'Para sobrepeso, resistencia a la insulina, glucosa elevada y sedentarismo.',
@@ -80,6 +83,7 @@ const programas: Programa[] = [
   },
   {
     id: 'actua-preventivo',
+    slug: 'phb-actua-preventivo',
     nombre: 'ACTÚA Preventivo',
     icon: 'fa-solid fa-shield-heart',
     tagline: 'Para quien está bien y quiere seguir estándolo.',
@@ -93,6 +97,7 @@ const programas: Programa[] = [
   },
   {
     id: 'actua-50-mas',
+    slug: 'phb-actua-50',
     nombre: 'ACTÚA 50+',
     icon: 'fa-solid fa-person-walking',
     tagline: 'Preservar energía, fuerza, función y autonomía.',
@@ -106,6 +111,7 @@ const programas: Programa[] = [
   },
   {
     id: 'actua-diabetes',
+    slug: 'phb-actua-diabetes',
     nombre: 'ACTÚA Diabetes',
     icon: 'fa-solid fa-chart-line',
     tagline: 'Acompañamiento conductual para vivir con diabetes con mayor control.',
@@ -119,6 +125,7 @@ const programas: Programa[] = [
   },
   {
     id: 'actua-regenerativo',
+    slug: 'phb-actua-regenerativo',
     nombre: 'ACTÚA Regenerativo',
     icon: 'fa-solid fa-dna',
     tagline: 'Preparación y sostenimiento conductual alrededor de una estrategia regenerativa.',
@@ -196,10 +203,6 @@ function seleccionar(situacion: string) {
           transformación guiada. Programas conductuales diseñados desde la psicología de la salud
           y la medicina conductual para que la intención se convierta en comportamiento sostenido.
         </p>
-        <div class="hero__ctas">
-          <BaseButton variant="primary" size="lg" href="#programas">Encontrar mi programa</BaseButton>
-          <BaseButton variant="ghost" size="lg" href="#metodo">¿Cómo funciona ACTÚA?</BaseButton>
-        </div>
         <ul class="hero__benefits">
           <li v-for="b in microBenefits" :key="b.title" class="hero__benefit">
             <p class="hero__benefit-title">{{ b.title }}</p>
@@ -257,7 +260,7 @@ function seleccionar(situacion: string) {
             <BaseButton
               variant="primary"
               size="md"
-              :href="EXTERNAL.store"
+              :href="storeProduct(p.slug)"
               block
             >
               Quiero este programa
@@ -283,9 +286,6 @@ function seleccionar(situacion: string) {
             </div>
           </li>
         </ol>
-        <div class="metodo__journey">
-          <JourneyPath :steps="['Comprender', 'Evaluar', 'Actuar', 'Medir', 'Regenerar']" active="Actuar" />
-        </div>
       </div>
     </section>
 
@@ -317,25 +317,10 @@ function seleccionar(situacion: string) {
           Para ti, recomendamos <strong>{{ recomendacionSeleccionada.programa }}</strong>.
         </p>
         <div class="selector__ctas">
-          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">
+          <BaseButton variant="primary" size="lg" :href="CONTACT.whatsappActua">
+            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
             Ayúdame a elegir
           </BaseButton>
-          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.store">
-            Hablar con PHB
-          </BaseButton>
-        </div>
-      </div>
-    </section>
-
-    <!-- 06. CIERRE -->
-    <section class="cierre">
-      <div class="cierre__container">
-        <p class="cierre__title">
-          ACTÚA es el puente entre lo que aprendes y lo que realmente cambia.
-        </p>
-        <div class="cierre__ctas">
-          <BaseButton variant="primary" size="lg" to="/aprende">Ir a APRENDE</BaseButton>
-          <BaseButton variant="ghost" size="lg" to="/regeneracion">Ir a REGENERACIÓN</BaseButton>
         </div>
       </div>
     </section>
@@ -620,11 +605,6 @@ function seleccionar(situacion: string) {
     max-width: 56ch;
   }
 
-  &__journey {
-    padding-top: $sp-5;
-    border-top: 1px solid $bone-line;
-  }
-
   :deep(.section-header__eyebrow) {
     color: $gold;
   }
@@ -635,22 +615,6 @@ function seleccionar(situacion: string) {
 
   :deep(.section-header__subtitle) {
     color: rgba($ink, 0.7);
-  }
-
-  :deep(.journey__step) {
-    color: rgba($ink, 0.6);
-  }
-
-  :deep(.journey__step--active) {
-    color: $gold;
-  }
-
-  :deep(.journey__index) {
-    color: rgba($gold, 0.7);
-  }
-
-  :deep(.journey__arrow) {
-    color: rgba($ink, 0.28);
   }
 }
 
@@ -709,29 +673,6 @@ function seleccionar(situacion: string) {
   &__resultado {
     @include body-lg;
     color: $white;
-  }
-
-  &__ctas {
-    @include row($sp-3);
-    flex-wrap: wrap;
-  }
-}
-
-// 06. CIERRE
-.cierre {
-  @include section-pad;
-  background: $grad-accent;
-
-  &__container {
-    @include container;
-    @include col($sp-5);
-    align-items: flex-start;
-  }
-
-  &__title {
-    @include display-md;
-    color: $ink;
-    max-width: 30ch;
   }
 
   &__ctas {

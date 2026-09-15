@@ -55,6 +55,66 @@ export const LOGOS = {
   phb: '/phb-logo.png',
 } as const
 
+export interface PressArticle {
+  outlet: string
+  title: string
+  url: string
+  /** Captura del artículo publicado, en /public/press/articles. */
+  image: string
+}
+
+/**
+ * Artículos publicados sobre Juan Román Garza. Cada tarjeta muestra la captura
+ * y abre el artículo original. Mismas URLs que juanromangarza.com (PressEventsSection).
+ */
+const ARTICLE_PATH =
+  'roman-garza-the-regenerative-entrepreneur-pioneering-regenerative-healthcare-with-a-hearfelt-vision/'
+
+export const PRESS_ARTICLES: PressArticle[] = [
+  {
+    outlet: 'The New York Finance',
+    title: 'Román Garza: pionero en la salud regenerativa y la medicina del futuro',
+    url: `https://thenewyorkfinance.com/${ARTICLE_PATH}`,
+    image: '/press/articles/new-york-finance.jpg',
+  },
+  {
+    outlet: 'The USA Reporter',
+    title: 'Un enfoque vanguardista para la regeneración y la longevidad',
+    url: `https://theusareporter.com/${ARTICLE_PATH}`,
+    image: '/press/articles/usa-reporter.jpg',
+  },
+  {
+    outlet: 'Big Boston News',
+    title: 'Innovación y liderazgo: el impacto de Powerhouse Biotech',
+    url: `https://www.bigbostonnews.com/${ARTICLE_PATH}`,
+    image: '/press/articles/big-boston-news.jpg',
+  },
+  {
+    outlet: 'The Chicago Finance',
+    title: 'Revolucionando el bienestar corporativo: la estrategia de Román Garza',
+    url: `https://thechicagofinance.com/${ARTICLE_PATH}`,
+    image: '/press/articles/chicago-finance.jpg',
+  },
+  {
+    outlet: 'The New Jersey Gazette',
+    title: 'El emprendedor que está transformando la biotecnología celular',
+    url: `https://thenewjerseygazette.com/${ARTICLE_PATH}`,
+    image: '/press/articles/new-jersey-gazette.jpg',
+  },
+  {
+    outlet: 'Houston Weekly News',
+    title: 'Tecnología médica avanzada: el futuro de la lucidez directiva',
+    url: `https://houstonweeklynews.com/${ARTICLE_PATH}`,
+    image: '/press/articles/houston-weekly-news.jpg',
+  },
+  {
+    outlet: 'The Chicago Gazette',
+    title: 'La nueva era de la medicina: terapias celulares y liderazgo integral',
+    url: `https://www.thechicagogazette.com/${ARTICLE_PATH}`,
+    image: '/press/articles/chicago-gazette.jpg',
+  },
+]
+
 /** Medios donde ha aparecido. Logos blancos sobre fondo oscuro. */
 export const PRESS = [
   '/press/press-1.png',

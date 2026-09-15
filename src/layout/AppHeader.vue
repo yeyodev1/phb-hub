@@ -6,21 +6,28 @@ import { LOGOS } from '@/config/media'
 
 interface NavItem {
   label: string
-  to: string
+  /** Ruta interna del hub. */
+  to?: string
+  /** Sitio del ecosistema (se abre en otra pestaña). */
+  href?: string
   hint: string
 }
 
 const NAV: NavItem[] = [
   { label: 'Inicio', to: '/', hint: 'El punto de partida' },
   { label: 'Aprende', to: '/aprende', hint: 'Libros, guías, cursos y masterclasses' },
+  { label: 'Fórmate', to: '/formate', hint: 'PHB Academy™ para pacientes responsables' },
+  { label: 'Evalúate', href: EXTERNAL.evaluate, hint: 'Evaluaciones PHB y biomarcadores' },
   { label: 'Actúa', to: '/actua', hint: 'Programas para sostener el cambio' },
   { label: 'Regeneración', to: '/regeneracion', hint: 'Programas clínicos regenerativos' },
   { label: 'Conferencias', to: '/conferencias', hint: 'Para empresas e instituciones' },
   { label: 'Empresas', to: '/empresas', hint: 'PHB Corporate Health' },
 ]
 
+const linkAttrs = (item: NavItem) =>
+  item.href ? { href: item.href, target: '_blank', rel: 'noopener' } : { to: item.to }
+
 const EXTERNOS = [
-  { label: 'Evalúate — PHB', href: EXTERNAL.evaluate, icon: 'fa-solid fa-chart-simple' },
   { label: 'Tienda', href: EXTERNAL.store, icon: 'fa-solid fa-bag-shopping' },
 ]
 
@@ -59,9 +66,14 @@ onBeforeUnmount(() => {
       </router-link>
 
       <nav class="header__desktop-nav">
-        <router-link v-for="item in NAV.slice(1)" :key="item.to" :to="item.to">
+        <component
+          :is="item.href ? 'a' : 'router-link'"
+          v-for="item in NAV.slice(1)"
+          :key="item.label"
+          v-bind="linkAttrs(item)"
+        >
           {{ item.label }}
-        </router-link>
+        </component>
       </nav>
 
       <div class="header__right">
@@ -102,10 +114,11 @@ onBeforeUnmount(() => {
         </div>
 
         <nav class="menu__nav">
-          <router-link
+          <component
+            :is="item.href ? 'a' : 'router-link'"
             v-for="(item, i) in NAV"
-            :key="item.to"
-            :to="item.to"
+            :key="item.label"
+            v-bind="linkAttrs(item)"
             class="menu__link"
             :style="{ '--i': i }"
           >
@@ -115,7 +128,7 @@ onBeforeUnmount(() => {
               <span class="menu__hint">{{ item.hint }}</span>
             </span>
             <i class="fa-solid fa-arrow-right menu__arrow" aria-hidden="true"></i>
-          </router-link>
+          </component>
         </nav>
 
         <div class="menu__externos">

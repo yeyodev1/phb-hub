@@ -5,13 +5,19 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: () => import('../views/HomeView.vue'),
-    meta: { title: 'Juan Román Garza × PHB | Entiende tu salud. Decide mejor. Actúa antes.' },
+    meta: { title: 'Juan Román Garza × PHB | Decisiones Inteligentes para tu Salud. Simplificadas.' },
   },
   {
     path: '/aprende',
     name: 'Aprende',
     component: () => import('../views/AprendeView.vue'),
     meta: { title: 'Aprende | Juan Román Garza × PHB' },
+  },
+  {
+    path: '/formate',
+    name: 'Formate',
+    component: () => import('../views/FormateView.vue'),
+    meta: { title: 'Fórmate | PHB Academy™ — Educación en salud para pacientes responsables' },
   },
   {
     path: '/actua',

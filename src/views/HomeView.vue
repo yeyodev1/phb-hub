@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import HeroSection from '@/components/home/HeroSection.vue'
+import PressArticles from '@/components/home/PressArticles.vue'
 import IntentSelector from '@/components/home/IntentSelector.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
-import JourneyPath from '@/components/ui/JourneyPath.vue'
 import ResourceCard from '@/components/ui/ResourceCard.vue'
 import { EXTERNAL } from '@/config/destinations'
 import { JUAN } from '@/config/media'
+import { sendLead } from '@/services/leads'
 
 interface World {
   key: string
@@ -20,16 +21,19 @@ interface World {
   href?: string
 }
 
-interface Ladder {
-  stage: string
-  layer: string
+interface Concept {
+  name: string
   copy: string
 }
 
-interface Brand {
+interface Step {
   name: string
-  role: string
-  promise: string
+  copy: string
+}
+
+interface Before {
+  label: string
+  copy: string
 }
 
 const WORLDS: World[] = [
@@ -39,14 +43,14 @@ const WORLDS: World[] = [
     name: 'Aprende',
     claim: 'Comprender',
     copy: 'Libros, guías, cursos y masterclasses para entender tu cuerpo y reconocer riesgos a tiempo.',
-    cta: 'Explorar biblioteca',
+    cta: 'Explorar Aprende',
     to: '/aprende',
   },
   {
     key: 'evalua',
     icon: 'fa-solid fa-chart-simple',
     name: 'Evalúate',
-    claim: 'Medir',
+    claim: 'Evaluar',
     copy: 'Evaluaciones PHB que convierten síntomas, antecedentes y biomarcadores en prioridades claras.',
     cta: 'Evaluar mi salud',
     href: EXTERNAL.evaluate,
@@ -55,7 +59,7 @@ const WORLDS: World[] = [
     key: 'actua',
     icon: 'fa-solid fa-bolt',
     name: 'Actúa',
-    claim: 'Cambiar',
+    claim: 'Actuar',
     copy: 'Programas conductuales de 30 días para convertir intención en comportamiento sostenido.',
     cta: 'Conocer ACTÚA',
     to: '/actua',
@@ -63,91 +67,99 @@ const WORLDS: World[] = [
   {
     key: 'regenera',
     icon: 'fa-solid fa-dna',
-    name: 'Regenera',
-    claim: 'Intervenir',
+    name: 'Regeneración',
+    claim: 'Regenerar',
     copy: 'Programas clínicos regenerativos que se evalúan antes de proponerse. Nunca se compran a ciegas.',
-    cta: 'Evaluar mi candidatura',
+    cta: 'Explorar regeneración',
     to: '/regeneracion',
   },
 ]
 
-const LADDER: Ladder[] = [
+// Documento 1 (JRG Tienda Online) con la dirección visual del documento 2:
+// la narrativa no va como párrafo largo, va como sección editorial.
+const CONCEPTS: Concept[] = [
+  { name: 'Interpretar', copy: 'En cómo interpretamos nuestra salud.' },
+  { name: 'Decidir', copy: 'En las decisiones que tomamos —o postergamos— cada día.' },
+  { name: 'Actuar', copy: 'En nuestra capacidad para convertir información en acción.' },
   {
-    stage: 'MEDIA',
-    layer: 'Contenido gratuito',
-    copy: 'Checklists, mini guías y evaluaciones abiertas para reconocer señales.',
-  },
-  {
-    stage: 'EDUCATION',
-    layer: 'Libros, guías y cursos',
-    copy: 'Comprensión estructurada de biomarcadores, riesgo, conducta y longevidad.',
-  },
-  {
-    stage: 'ASSESSMENT',
-    layer: 'Evaluación PHB',
-    copy: 'De información fragmentada a una fotografía clara de dónde estás hoy.',
-  },
-  {
-    stage: 'BEHAVIOR CHANGE',
-    layer: 'PHB ACTÚA™',
-    copy: 'Acompañamiento conductual para sostener el cambio, no solo iniciarlo.',
-  },
-  {
-    stage: 'CLINICAL CARE',
-    layer: 'Programas regenerativos',
-    copy: 'Cuando existe indicación clínica, se ejecuta con criterio y seguimiento.',
+    name: 'Adaptarnos',
+    copy: 'Y en la capacidad biológica que conserva nuestro organismo para adaptarse, recuperarse y regenerarse.',
   },
 ]
 
-const BRANDS: Brand[] = [
+const PHILOSOPHY: Step[] = [
+  { name: 'Comprender', copy: 'Entender qué está sucediendo.' },
+  { name: 'Decidir', copy: 'Determinar qué merece atención y qué hacer después.' },
+  { name: 'Actuar', copy: 'Transformar conocimiento en comportamiento.' },
+  { name: 'Medir', copy: 'Observar resultados, evolución y nuevas señales.' },
   {
-    name: 'Juan Román Garza',
-    role: 'Autoridad · Comunicación · Educación',
-    promise: 'Te enseño a entender y transformar tu relación con tu salud.',
-  },
-  {
-    name: 'PHB',
-    role: 'Inteligencia · Medición · Decisión',
-    promise: 'Te ayudamos a entender dónde estás y qué deberías priorizar.',
-  },
-  {
-    name: 'PHB ACTÚA',
-    role: 'Conducta',
-    promise: 'Te ayudamos a convertir conocimiento en acción.',
-  },
-  {
-    name: 'Red clínica',
-    role: 'Intervención',
-    promise: 'Cuando existe una indicación clínica, se ejecuta.',
+    name: 'Regenerar',
+    copy: 'Preservar, recuperar y optimizar función cuando exista oportunidad para hacerlo.',
   },
 ]
 
-const freeEmail = ref('')
+const BEFORE: Before[] = [
+  { label: 'Antes de la enfermedad', copy: 'Antes de que una señal se convierta en enfermedad.' },
+  {
+    label: 'Antes del deterioro',
+    copy: 'Antes de que la enfermedad avance hacia un deterioro irreversible.',
+  },
+  {
+    label: 'Antes de perder oportunidades',
+    copy: 'Y antes de perder oportunidades valiosas para actuar.',
+  },
+]
+
+// --- Educación gratuita: el lead entra al CRM y recibe el PDF por correo ---
+const free = ref({ name: '', email: '', whatsapp: '' })
+const freeSending = ref(false)
 const freeSent = ref(false)
+const freeError = ref('')
 
-function submitFree() {
-  if (!/^\S+@\S+\.\S+$/.test(freeEmail.value.trim())) return
-  freeSent.value = true
-}
+const freeIsValid = computed(
+  () =>
+    free.value.name.trim().length > 1 &&
+    /^\S+@\S+\.\S+$/.test(free.value.email.trim()) &&
+    free.value.whatsapp.replace(/\D/g, '').length >= 8,
+)
 
-function scrollToIntents() {
-  document.getElementById('explorar')?.scrollIntoView({ behavior: 'smooth' })
+async function submitFree() {
+  if (!freeIsValid.value || freeSending.value) return
+  freeSending.value = true
+  freeError.value = ''
+  try {
+    await sendLead({
+      intent: 'aprender',
+      source: 'hub-educacion-gratuita',
+      answers: { recurso: 'checklist-20-senales + mini-guia-10-biomarcadores' },
+      name: free.value.name.trim(),
+      email: free.value.email.trim(),
+      whatsapp: free.value.whatsapp.trim(),
+      consent: true,
+    })
+    freeSent.value = true
+  } catch (e) {
+    freeError.value = e instanceof Error ? e.message : 'No pudimos registrar tus datos'
+  } finally {
+    freeSending.value = false
+  }
 }
 </script>
 
 <template>
   <div class="home">
-    <HeroSection @explore="scrollToIntents" />
+    <HeroSection />
+
+    <PressArticles />
 
     <IntentSelector />
 
-    <!-- 4 MUNDOS -->
+    <!-- ECOSISTEMA -->
     <section class="worlds">
       <div class="worlds__inner">
         <SectionHeader
-          eyebrow="El ecosistema"
-          title="Cuatro mundos, un mismo recorrido."
-          subtitle="Aprende → Evalúate → Actúa → Regenera. Cada pieza existe porque la anterior no basta por sí sola."
+          eyebrow="El ecosistema de salud"
+          title="Aprender · Evaluar · Actuar · Regenerar"
         />
 
         <ul class="worlds__list">
@@ -172,41 +184,90 @@ function scrollToIntents() {
       </div>
     </section>
 
-    <!-- AUTORIDAD -->
-    <section class="author">
-      <div class="author__inner">
-        <p class="author__eyebrow">Quién está detrás</p>
-        <h2 class="author__title">
-          ¿Por qué algunas personas logran cambiar y otras continúan deteriorándose aun
-          sabiendo que necesitan actuar?
-        </h2>
-        <div class="author__body">
-          <p>
-            La respuesta no está solamente en la medicina. Está en la interacción entre
-            conducta y biología. En cómo interpretamos nuestra salud. En las decisiones que
-            tomamos —o postergamos— cada día.
+    <!-- LA PREGUNTA QUE GUÍA MI TRABAJO -->
+    <section class="question">
+      <div class="question__inner">
+        <div class="question__text">
+          <p class="question__lead">
+            Durante años he estudiado una pregunta que puede cambiar el destino de una persona:
           </p>
-          <p>
-            Esta búsqueda me llevó a integrar psicología de la salud, medicina conductual,
-            biomarcadores, prevención, tecnología, inteligencia clínica y medicina
-            regenerativa bajo una misma filosofía.
-          </p>
-          <p class="author__quote">
-            Porque el futuro de tu salud no depende únicamente de lo que sabes. Depende de
-            lo que decides hacer con lo que sabes.
-          </p>
-          <p class="author__sign">— Juan Román Garza</p>
+          <h2 class="question__title">
+            ¿Por qué algunas personas logran cambiar, recuperarse y preservar su salud,
+            mientras otras continúan deteriorándose aun sabiendo que necesitan actuar?
+          </h2>
         </div>
-        <JourneyPath />
+
+        <figure class="question__figure">
+          <img
+            :src="JUAN.seated"
+            alt="Juan Román Garza, retrato de cuerpo completo"
+            loading="lazy"
+          />
+        </figure>
       </div>
 
-      <figure class="author__figure">
-        <img
-          :src="JUAN.seated"
-          alt="Juan Román Garza, retrato de cuerpo completo"
-          loading="lazy"
+      <div class="answer">
+        <p class="answer__lead">La respuesta no está solamente en la medicina.</p>
+        <p class="answer__axis">
+          Está en la interacción entre
+          <strong>conducta</strong>
+          <span aria-hidden="true">↔</span>
+          <strong>biología</strong>.
+        </p>
+
+        <ul class="answer__concepts">
+          <li v-for="c in CONCEPTS" :key="c.name" class="answer__concept">
+            <p class="answer__concept-name">{{ c.name }}</p>
+            <p class="answer__concept-copy">{{ c.copy }}</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- UNA FILOSOFÍA INTEGRATIVA -->
+    <section class="philosophy">
+      <div class="philosophy__inner">
+        <SectionHeader
+          eyebrow="Una filosofía integrativa de la salud"
+          title="Comprender no es suficiente. Hay que convertir el conocimiento en decisiones y las decisiones en acción."
+          subtitle="Esta búsqueda me llevó a integrar psicología de la salud, medicina conductual, biomarcadores, prevención, tecnología, inteligencia clínica y medicina regenerativa bajo una misma filosofía:"
         />
-      </figure>
+
+        <ol class="philosophy__steps">
+          <li v-for="(s, i) in PHILOSOPHY" :key="s.name" class="philosophy__step">
+            <span class="philosophy__index">{{ String(i + 1).padStart(2, '0') }}</span>
+            <p class="philosophy__name">{{ s.name }}.</p>
+            <p class="philosophy__copy">{{ s.copy }}</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- LO QUE TE OFREZCO HOY -->
+    <section class="today">
+      <div class="today__inner">
+        <SectionHeader
+          eyebrow="Lo que hago hoy"
+          title="Ayudarte a entender mejor tu salud antes de que pierdas oportunidades valiosas para actuar."
+          subtitle="Hoy ayudo a las personas a comprender mejor su cuerpo y su comportamiento, identificar riesgos oportunamente, reducir incertidumbre y tomar decisiones más inteligentes sobre su salud."
+        />
+
+        <ul class="today__blocks">
+          <li v-for="b in BEFORE" :key="b.label" class="today__block">
+            <p class="today__label">{{ b.label }}</p>
+            <p class="today__copy">{{ b.copy }}</p>
+          </li>
+        </ul>
+
+        <div class="today__close">
+          <p>Porque el futuro de tu salud no depende únicamente de lo que sabes.</p>
+          <p class="today__close-strong">Depende de lo que decides hacer con lo que sabes.</p>
+          <p class="today__sign">
+            Juan Román Garza
+            <span>Decisiones Inteligentes para tu Salud. Simplificadas.</span>
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- DESTACADOS -->
@@ -302,69 +363,6 @@ function scrollToIntents() {
       </div>
     </section>
 
-    <!-- ESCALERA -->
-    <section class="ladder">
-      <div class="ladder__inner">
-        <SectionHeader
-          eyebrow="La ruta completa"
-          title="De la información a la intervención."
-          subtitle="Nadie llega directo a un tratamiento. Cada escalón existe para que la siguiente decisión sea mejor que la anterior."
-        />
-
-        <ol class="ladder__list">
-          <li v-for="(l, i) in LADDER" :key="l.stage" class="ladder__step">
-            <span class="ladder__index">{{ String(i + 1).padStart(2, '0') }}</span>
-            <div class="ladder__content">
-              <p class="ladder__stage">{{ l.stage }}</p>
-              <h3 class="ladder__layer">{{ l.layer }}</h3>
-              <p class="ladder__copy">{{ l.copy }}</p>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- MARCAS -->
-    <section class="brands">
-      <div class="brands__inner">
-        <SectionHeader
-          eyebrow="Arquitectura de marcas"
-          title="Cada marca tiene un trabajo distinto."
-        />
-
-        <ul class="brands__list">
-          <li v-for="b in BRANDS" :key="b.name" class="brands__item">
-            <article class="brand">
-              <h3 class="brand__name">{{ b.name }}</h3>
-              <p class="brand__role">{{ b.role }}</p>
-              <p class="brand__promise">“{{ b.promise }}”</p>
-            </article>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- MEMBRESÍA -->
-    <section class="membership">
-      <div class="membership__inner">
-        <p class="membership__eyebrow">PHB ONE™ · Próximamente</p>
-        <h2 class="membership__title">
-          Una membresía para no volver a quedarte solo con la información.
-        </h2>
-        <ul class="membership__perks">
-          <li>Masterclass mensual</li>
-          <li>Biblioteca de guías</li>
-          <li>Sesiones en vivo</li>
-          <li>Retos y comunidad</li>
-          <li>Evaluaciones periódicas</li>
-          <li>Newsletter premium</li>
-        </ul>
-        <BaseButton variant="ghost" @click="scrollToIntents">
-          Quiero enterarme primero
-        </BaseButton>
-      </div>
-    </section>
-
     <!-- EDUCACIÓN GRATUITA -->
     <section class="free">
       <div class="free__inner">
@@ -376,21 +374,64 @@ function scrollToIntents() {
 
         <form v-if="!freeSent" class="free__form" @submit.prevent="submitFree">
           <label class="free__field">
+            <span class="visually-hidden">Nombre</span>
+            <input
+              v-model="free.name"
+              type="text"
+              placeholder="Tu nombre"
+              autocomplete="name"
+              required
+            />
+          </label>
+          <label class="free__field">
             <span class="visually-hidden">Email</span>
             <input
-              v-model="freeEmail"
+              v-model="free.email"
               type="email"
               placeholder="tu@correo.com"
               autocomplete="email"
               required
             />
           </label>
-          <BaseButton type="submit" size="lg">Descargar gratis</BaseButton>
+          <label class="free__field">
+            <span class="visually-hidden">WhatsApp</span>
+            <input
+              v-model="free.whatsapp"
+              type="tel"
+              placeholder="WhatsApp"
+              autocomplete="tel"
+              required
+            />
+          </label>
+          <BaseButton type="submit" size="lg" :disabled="!freeIsValid || freeSending">
+            {{ freeSending ? 'Enviando…' : 'Descargar gratis' }}
+          </BaseButton>
         </form>
 
-        <p v-else class="free__done">
+        <p v-if="freeError" class="free__error" role="alert">{{ freeError }}</p>
+
+        <p v-if="freeSent" class="free__done">
           Listo. Revisa tu correo — te enviamos el checklist y la mini guía.
         </p>
+      </div>
+    </section>
+
+    <!-- ACCIÓN -->
+    <section class="action">
+      <div class="action__inner">
+        <h2 class="action__title">Tu salud no cambia solamente porque sabes más.</h2>
+        <p class="action__sub">
+          Cambia cuando comprendes lo que está sucediendo, decides actuar y construyes una
+          estrategia para preservar lo que todavía puedes proteger, recuperar u optimizar.
+        </p>
+        <p class="action__sign">
+          Juan Román Garza
+          <span>Decisiones Inteligentes para tu Salud. Simplificadas.</span>
+        </p>
+        <BaseButton size="lg" :href="EXTERNAL.catalog">
+          Explorar todos los recursos
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </BaseButton>
       </div>
     </section>
   </div>
@@ -405,7 +446,7 @@ function scrollToIntents() {
   clip-path: inset(50%);
 }
 
-/* --- 4 MUNDOS --- */
+/* --- ECOSISTEMA --- */
 .worlds {
   @include section-pad;
 
@@ -476,29 +517,53 @@ function scrollToIntents() {
   }
 }
 
-/* --- AUTORIDAD --- */
-.author {
+/* --- LA PREGUNTA --- */
+.question {
   @include section-pad;
+  @include col($sp-7);
   background: linear-gradient(180deg, $navy 0%, $navy-soft 100%);
-  display: flex;
-  flex-direction: column;
-  gap: $sp-6;
 
-  @include from($bp-lg) {
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: center;
-    gap: $sp-8;
-    padding-inline: $sp-6;
+  &__inner {
+    @include container;
+    display: flex;
+    flex-direction: column;
+    gap: $sp-6;
+
+    @include from($bp-lg) {
+      flex-direction: row;
+      align-items: center;
+      gap: $sp-8;
+    }
+  }
+
+  &__text {
+    @include col($sp-4);
+
+    @include from($bp-lg) {
+      flex: 1 1 60%;
+    }
+  }
+
+  &__lead {
+    @include eyebrow;
+    color: $gold-soft;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 0.95rem;
+  }
+
+  // La pregunta tiene el protagonismo visual de la sección.
+  &__title {
+    @include display-xl;
+    color: $white;
+    max-width: 24ch;
   }
 
   &__figure {
-    @include container;
     display: flex;
 
     @include from($bp-lg) {
-      flex: 0 1 360px;
-      padding-inline: 0;
+      flex: 0 1 340px;
     }
 
     img {
@@ -511,48 +576,216 @@ function scrollToIntents() {
       object-position: center 25%;
     }
   }
+}
 
-  &__inner {
-    @include container;
-    @include col($sp-5);
-    max-width: 820px;
+.answer {
+  @include container;
+  @include col($sp-5);
 
-    @include from($bp-lg) {
-      flex: 1 1 640px;
-      padding-inline: 0;
+  &__lead {
+    @include body-lg;
+    color: $muted-strong;
+  }
+
+  &__axis {
+    @include display-lg;
+    color: $white;
+
+    strong {
+      color: $gold-soft;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    span {
+      color: $cyan;
+      margin-inline: $sp-2;
     }
   }
 
-  &__eyebrow {
-    @include eyebrow;
+  &__concepts {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: $sp-3;
   }
 
-  &__title {
-    @include display-lg;
+  &__concept {
+    @include card-surface;
+    @include col($sp-2);
+    flex: 1 1 100%;
+    padding: $sp-5;
+
+    @include from($bp-md) {
+      flex: 1 1 calc(50% - #{$sp-3} / 2);
+    }
+
+    @include from($bp-lg) {
+      flex: 1 1 calc(25% - #{$sp-3} * 3 / 4);
+    }
+  }
+
+  &__concept-name {
+    font-family: $font-accent;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $accent;
+  }
+
+  &__concept-copy {
+    @include body;
+    color: $muted-strong;
+  }
+}
+
+/* --- FILOSOFÍA (sección clara: firma visual de la marca) --- */
+.philosophy {
+  @include section-pad;
+  background: $bone;
+
+  &__inner {
+    @include container;
+    @include col($sp-7);
+  }
+
+  :deep(.section-header) {
+    max-width: 72ch;
+  }
+
+  :deep(.section-header__eyebrow) {
+    color: $gold;
+  }
+
+  :deep(.section-header__title) {
+    color: $ink;
+  }
+
+  :deep(.section-header__subtitle) {
+    color: rgba($ink, 0.7);
+  }
+
+  // Desktop: recorrido horizontal. Mobile: recorrido vertical.
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    @include from($bp-lg) {
+      flex-direction: row;
+    }
+  }
+
+  &__step {
+    @include col($sp-2);
+    flex: 1 1 0;
+    padding: $sp-5 0;
+    border-top: 1px solid $bone-line;
+
+    @include from($bp-lg) {
+      padding: $sp-5 $sp-4 0 0;
+      border-top: 2px solid $gold;
+    }
+  }
+
+  &__index {
+    font-family: $font-accent;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: $gold;
+  }
+
+  &__name {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: $ink;
+  }
+
+  &__copy {
+    @include body;
+    color: rgba($ink, 0.7);
+  }
+}
+
+/* --- HOY --- */
+.today {
+  @include section-pad;
+  background: linear-gradient(180deg, $navy-soft 0%, $navy 100%);
+
+  &__inner {
+    @include container;
+    @include col($sp-6);
+  }
+
+  :deep(.section-header) {
+    max-width: 68ch;
+  }
+
+  &__blocks {
+    @include col(0);
+  }
+
+  &__block {
+    @include col($sp-2);
+    padding-block: $sp-5;
+    border-top: 1px solid $line-strong;
+
+    &:last-child {
+      border-bottom: 1px solid $line-strong;
+    }
+
+    @include from($bp-md) {
+      flex-direction: row;
+      align-items: baseline;
+      gap: $sp-6;
+    }
+  }
+
+  &__label {
+    @include eyebrow;
+    color: $gold-soft;
+
+    @include from($bp-md) {
+      flex: 0 0 260px;
+    }
+  }
+
+  &__copy {
+    @include body-lg;
     color: $white;
   }
 
-  &__body {
-    @include col($sp-4);
+  &__close {
+    @include col($sp-3);
 
-    p {
+    p:first-child {
       @include body-lg;
     }
   }
 
-  &__quote {
-    padding-left: $sp-4;
-    border-left: 2px solid $gold;
+  &__close-strong {
+    @include display-lg;
     color: $white !important;
-    font-family: $font-display;
-    font-weight: 500;
   }
 
   &__sign {
-    font-family: $font-accent;
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    color: $gold-soft;
+    @include col($sp-1);
+    font-family: $font-display;
+    font-weight: 700;
+    color: $white !important;
+
+    span {
+      font-family: $font-accent;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: $gold-soft;
+    }
   }
 }
 
@@ -666,175 +899,6 @@ function scrollToIntents() {
   }
 }
 
-/* --- ESCALERA (sección clara: rompe el bloque azul) --- */
-.ladder {
-  @include section-pad;
-  background: $bone;
-
-  &__inner {
-    @include container;
-    @include col($sp-6);
-  }
-
-  // La sección clara necesita invertir el contraste del SectionHeader.
-  :deep(.section-header__title) {
-    color: $ink;
-  }
-
-  :deep(.section-header__subtitle) {
-    color: rgba($ink, 0.68);
-  }
-
-  :deep(.section-header__eyebrow) {
-    color: $gold;
-  }
-
-  &__list {
-    @include col(0);
-  }
-
-  &__step {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: $sp-4;
-    padding-block: $sp-5;
-    border-top: 1px solid $bone-line;
-
-    &:last-child {
-      border-bottom: 1px solid $bone-line;
-    }
-  }
-
-  &__index {
-    flex-shrink: 0;
-    font-family: $font-accent;
-    font-weight: 700;
-    font-size: 0.82rem;
-    color: $gold;
-    padding-top: 0.25rem;
-  }
-
-  &__content {
-    @include col($sp-2);
-  }
-
-  &__stage {
-    @include eyebrow;
-    font-size: 0.6rem;
-    color: rgba($ink, 0.45);
-  }
-
-  &__layer {
-    font-family: $font-display;
-    font-weight: 600;
-    font-size: 1.15rem;
-    color: $ink;
-  }
-
-  &__copy {
-    @include body;
-    color: rgba($ink, 0.7);
-  }
-}
-
-/* --- MARCAS --- */
-.brands {
-  @include section-pad;
-  background: linear-gradient(180deg, $ink 0%, $navy 100%);
-
-  &__inner {
-    @include container;
-    @include col($sp-6);
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-3;
-  }
-
-  &__item {
-    flex: 1 1 100%;
-    display: flex;
-
-    @include from($bp-md) {
-      flex: 1 1 calc(50% - #{$sp-3} / 2);
-    }
-
-    @include from($bp-lg) {
-      flex: 1 1 calc(25% - #{$sp-3} * 3 / 4);
-    }
-  }
-}
-
-.brand {
-  @include card-surface;
-  @include col($sp-2);
-  width: 100%;
-  padding: $sp-5;
-
-  &__name {
-    font-family: $font-display;
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: 0.02em;
-    color: $white;
-  }
-
-  &__role {
-    font-family: $font-accent;
-    font-size: 0.66rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba($cyan, 0.85);
-  }
-
-  &__promise {
-    @include body;
-    font-style: italic;
-  }
-}
-
-/* --- MEMBRESÍA --- */
-.membership {
-  @include section-pad;
-
-  &__inner {
-    @include container;
-    @include col($sp-4);
-    align-items: flex-start;
-    max-width: 760px;
-  }
-
-  &__eyebrow {
-    @include eyebrow;
-    color: $gold-soft;
-  }
-
-  &__title {
-    @include display-lg;
-    color: $white;
-  }
-
-  &__perks {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-2;
-
-    li {
-      font-family: $font-accent;
-      font-size: 0.75rem;
-      color: $muted-strong;
-      border: 1px solid $line-strong;
-      border-radius: $r-pill;
-      padding: 0.5rem 0.9rem;
-    }
-  }
-}
-
 /* --- GRATIS --- */
 .free {
   @include section-pad;
@@ -850,9 +914,9 @@ function scrollToIntents() {
     flex-direction: column;
     gap: $sp-3;
     width: 100%;
-    max-width: 520px;
+    max-width: 920px;
 
-    @include from($bp-sm) {
+    @include from($bp-lg) {
       flex-direction: row;
       align-items: center;
     }
@@ -881,9 +945,53 @@ function scrollToIntents() {
     }
   }
 
+  &__error {
+    @include body;
+    color: $alert-error;
+  }
+
   &__done {
     @include body-lg;
     color: $green;
+  }
+}
+
+/* --- ACCIÓN --- */
+.action {
+  @include section-pad;
+  background: radial-gradient(120% 90% at 20% 100%, $navy-soft 0%, $ink 65%);
+  border-top: 1px solid $line;
+
+  &__inner {
+    @include container;
+    @include col($sp-5);
+    align-items: flex-start;
+    max-width: 880px;
+  }
+
+  &__title {
+    @include display-xl;
+    color: $white;
+  }
+
+  &__sub {
+    @include body-lg;
+    max-width: 60ch;
+  }
+
+  &__sign {
+    @include col($sp-1);
+    font-family: $font-display;
+    font-weight: 700;
+    color: $white;
+
+    span {
+      font-family: $font-accent;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: $gold-soft;
+    }
   }
 }
 </style>

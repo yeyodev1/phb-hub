@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import BaseButton from '@/components/ui/BaseButton.vue'
 import SectionHeader from '@/components/ui/SectionHeader.vue'
-import JourneyPath from '@/components/ui/JourneyPath.vue'
+import TestimonialsSection from '@/components/ui/TestimonialsSection.vue'
 import { EXTERNAL } from '@/config/destinations'
 
 /* ------------------------------------------------------------------ */
 /* Tipos                                                                */
 /* ------------------------------------------------------------------ */
-interface FreeResource {
-  title: string
-}
-
 interface TopicCard {
   icon: string
   title: string
@@ -30,16 +26,7 @@ interface JourneyPathCard {
 }
 
 /* ------------------------------------------------------------------ */
-/* 02. GRATUITOS                                                        */
-/* ------------------------------------------------------------------ */
-const freeResources: FreeResource[] = [
-  { title: 'Checklist: 20 señales de que deberías evaluar mejor tu salud' },
-  { title: 'Mini guía: 10 biomarcadores que no deberías ignorar' },
-  { title: 'Evaluación: ¿Estoy realmente cuidando mi salud o solo reaccionando cuando algo sucede?' },
-]
-
-/* ------------------------------------------------------------------ */
-/* 03. ¿QUÉ QUIERES ENTENDER MEJOR?                                     */
+/* 02. ¿QUÉ QUIERES ENTENDER MEJOR?                                     */
 /* ------------------------------------------------------------------ */
 const topicCards: TopicCard[] = [
   {
@@ -87,7 +74,7 @@ const topicCards: TopicCard[] = [
 ]
 
 /* ------------------------------------------------------------------ */
-/* 05. DE APRENDER A ACTUAR                                             */
+/* 03. DE APRENDER A ACTUAR                                             */
 /* ------------------------------------------------------------------ */
 const journeyCards: JourneyPathCard[] = [
   {
@@ -115,6 +102,18 @@ const journeyCards: JourneyPathCard[] = [
     to: '/regeneracion',
   },
 ]
+
+/* ------------------------------------------------------------------ */
+/* 04. TESTIMONIOS                                                      */
+/* ------------------------------------------------------------------ */
+const testimonialResources = [
+  'Checklist: 20 señales de que deberías evaluar mejor tu salud',
+  'Mini guía: 10 biomarcadores que no deberías ignorar',
+  'Todavía no estoy tan mal',
+  '50 biomarcadores que deberías conocer',
+  'Cómo entender mejor tus análisis clínicos',
+  'Otro recurso de la tienda',
+]
 </script>
 
 <template>
@@ -133,33 +132,12 @@ const journeyCards: JourneyPathCard[] = [
         </p>
 
         <div class="hero__ctas">
-          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">Explorar biblioteca</BaseButton>
-          <BaseButton variant="ghost" size="lg" :href="EXTERNAL.store">Ver recursos gratuitos</BaseButton>
+          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">Ver recursos gratuitos</BaseButton>
         </div>
       </div>
     </section>
 
-    <!-- 02. GRATUITOS -->
-    <section class="free">
-      <div class="free__container">
-        <SectionHeader
-          eyebrow="Sin costo"
-          title="Recursos gratuitos para empezar"
-          subtitle="Antes de avanzar, empieza por aquí: tres recursos gratis para entender mejor dónde estás."
-        />
-
-        <div class="free__row">
-          <div v-for="fr in freeResources" :key="fr.title" class="free__card">
-            <i class="free__card-icon fa-solid fa-gift" aria-hidden="true"></i>
-            <p class="free__card-title">{{ fr.title }}</p>
-          </div>
-        </div>
-
-        <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">Ver recursos gratuitos</BaseButton>
-      </div>
-    </section>
-
-    <!-- 03. ¿QUÉ QUIERES ENTENDER MEJOR? -->
+    <!-- 02. ¿QUÉ QUIERES ENTENDER MEJOR? -->
     <section class="topics">
       <div class="topics__container">
         <SectionHeader
@@ -173,7 +151,7 @@ const journeyCards: JourneyPathCard[] = [
             v-for="t in topicCards"
             :key="t.title"
             class="topics__card"
-            :href="`${EXTERNAL.store}/tienda?theme=${t.slug}`"
+            :href="`${EXTERNAL.catalog}?theme=${t.slug}`"
             target="_blank"
             rel="noopener"
           >
@@ -186,23 +164,7 @@ const journeyCards: JourneyPathCard[] = [
       </div>
     </section>
 
-    <!-- 04. LA TIENDA -->
-    <section class="store-banner">
-      <div class="store-banner__container">
-        <SectionHeader
-          eyebrow="Tienda PHB"
-          title="La biblioteca completa vive en la tienda."
-          subtitle="Libros, guías, masterclasses y cursos, con su precio, su formato y lo que vas a aprender en cada uno."
-          align="center"
-        >
-          <BaseButton variant="primary" size="lg" :href="EXTERNAL.store">
-            Ir a la tienda <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
-          </BaseButton>
-        </SectionHeader>
-      </div>
-    </section>
-
-    <!-- 05. DE APRENDER A ACTUAR -->
+    <!-- 03. DE APRENDER A ACTUAR -->
     <section class="cta-journey">
       <div class="cta-journey__container">
         <SectionHeader
@@ -210,8 +172,6 @@ const journeyCards: JourneyPathCard[] = [
           title="Aprender es solamente el primer paso."
           subtitle="Puedes leer veinte libros sobre salud y continuar tomando las mismas decisiones. El verdadero valor del conocimiento aparece cuando puedes utilizarlo para comprender dónde estás, qué necesitas cambiar y cuál debería ser tu siguiente paso."
         />
-
-        <JourneyPath :steps="['Comprender', 'Evaluar', 'Actuar', 'Medir', 'Regenerar']" active="Comprender" />
 
         <div class="cta-journey__row">
           <div v-for="jc in journeyCards" :key="jc.title" class="cta-journey__card">
@@ -222,10 +182,11 @@ const journeyCards: JourneyPathCard[] = [
             <BaseButton variant="link" :href="jc.href" :to="jc.to">{{ jc.cta }}</BaseButton>
           </div>
         </div>
-
-        <p class="cta-journey__tagline">APRENDE → EVALÚATE → ACTÚA → REGENERA</p>
       </div>
     </section>
+
+    <!-- 04. TESTIMONIOS -->
+    <TestimonialsSection source="aprende" :resources="testimonialResources" />
   </div>
 </template>
 
@@ -278,50 +239,7 @@ const journeyCards: JourneyPathCard[] = [
   }
 }
 
-/* ---------- 02. GRATUITOS ---------- */
-.free {
-  @include section-pad;
-  background: $navy-soft;
-
-  &__container {
-    @include container;
-    @include col($sp-6);
-    align-items: flex-start;
-  }
-
-  &__row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: $sp-4;
-    width: 100%;
-  }
-
-  &__card {
-    @include card-surface;
-    @include col($sp-3);
-    flex: 1 1 100%;
-    padding: $sp-5;
-
-    @include from($bp-md) {
-      flex: 1 1 calc(33.333% - #{$sp-4} * 2 / 3);
-    }
-  }
-
-  &__card-icon {
-    font-size: 1.25rem;
-    line-height: 1;
-    color: $cyan;
-  }
-
-  &__card-title {
-    @include body;
-    color: $muted-strong;
-    font-weight: 500;
-  }
-}
-
-/* ---------- 03. TOPICS ---------- */
+/* ---------- 02. TOPICS ---------- */
 .topics {
   @include section-pad;
   // sección clara: rompe el "todo azul" y da respiro visual al recorrido oscuro
@@ -409,26 +327,7 @@ const journeyCards: JourneyPathCard[] = [
   }
 }
 
-/* ---------- 04. LA TIENDA ---------- */
-.store-banner {
-  @include section-pad;
-
-  &__container {
-    @include container;
-    display: flex;
-    justify-content: center;
-  }
-
-  :deep(.section-header) {
-    max-width: 52ch;
-  }
-
-  :deep(.section-header__title) {
-    color: $white;
-  }
-}
-
-/* ---------- 05. DE APRENDER A ACTUAR ---------- */
+/* ---------- 03. DE APRENDER A ACTUAR ---------- */
 .cta-journey {
   @include section-pad;
   background: $navy-soft;
@@ -480,13 +379,6 @@ const journeyCards: JourneyPathCard[] = [
 
   &__copy {
     @include body;
-  }
-
-  &__tagline {
-    @include eyebrow;
-    text-align: center;
-    font-size: 0.85rem;
-    color: $accent;
   }
 }
 </style>

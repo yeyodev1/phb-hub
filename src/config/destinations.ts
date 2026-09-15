@@ -9,9 +9,18 @@ export const EXTERNAL = {
   evaluacion: 'https://evaluacion.powerhousebiotech.com/',
   /** Tienda: libros, guías, cursos y masterclasses. */
   store: 'https://store.powerhousebiotech.com/',
+  /** Catálogo completo de la tienda (todas las áreas). */
+  catalog: 'https://store.powerhousebiotech.com/tienda',
   /** Funnel de rutas de medicina regenerativa. */
   regenerativa: 'https://evaluacion.powerhousebiotech.com/',
 } as const
+
+/** Ficha de un producto en la tienda, lista para comprar. */
+export const storeProduct = (slug: string) => `${EXTERNAL.store}producto/${slug}`
+
+/** Catálogo filtrado por categoría y, opcionalmente, por tema. */
+export const storeCategory = (category: string, theme?: string) =>
+  `${EXTERNAL.catalog}?category=${category}${theme ? `&theme=${theme}` : ''}`
 
 const WA_NUMBER = '5215553518114'
 
@@ -30,6 +39,10 @@ export const CONTACT = {
   whatsappEmpresas: waLink(
     'Hola, quiero llevar un programa de PHB Corporate Health a mi empresa.',
   ),
+  /** "Ayúdame a elegir" de ACTÚA. */
+  whatsappActua: waLink('Hola, quiero ayuda para elegir el programa PHB ACTÚA adecuado para mí.'),
+  /** "Ayúdame a elegir un programa" de Fórmate. */
+  whatsappFormate: waLink('Hola, quiero ayuda para elegir un programa de PHB Academy.'),
   waLink,
   email: 'info@powerhousebiotech.com',
 } as const
