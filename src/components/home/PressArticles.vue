@@ -52,7 +52,30 @@ import { PRESS_ARTICLES } from '@/config/media'
     gap: $sp-3;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding-bottom: $sp-2;
+    padding-bottom: $sp-3;
+    // Desvanecido a la derecha: sugiere que hay más artículos sin mostrar una barra tosca.
+    mask-image: linear-gradient(90deg, #000 0%, #000 88%, transparent 100%);
+    // Barra de scroll delgada con los colores de la marca (la nativa se veía blanca).
+    scrollbar-width: thin;
+    scrollbar-color: rgba($gold, 0.55) transparent;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba($white, 0.04);
+      border-radius: $r-pill;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($gold, 0.5);
+      border-radius: $r-pill;
+
+      &:hover {
+        background: $gold-soft;
+      }
+    }
   }
 
   &__item {
