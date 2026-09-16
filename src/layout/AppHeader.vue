@@ -102,7 +102,13 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- MENÚ PANTALLA COMPLETA -->
-    <transition name="menu">
+    <!--
+      Va teleportado al body a propósito: el header usa backdrop-filter y eso lo
+      convierte en el bloque contenedor de sus descendientes fixed, lo que
+      recortaba el menú a la altura del header (96px) en vez de cubrir la ventana.
+    -->
+    <Teleport to="body">
+      <transition name="menu">
       <div v-if="open" id="menu-full" class="menu" role="dialog" aria-modal="true">
         <div class="menu__glow" aria-hidden="true"></div>
 
@@ -171,8 +177,9 @@ onBeforeUnmount(() => {
             COMPRENDER · DECIDIR · ACTUAR · MEDIR · REGENERAR
           </p>
         </div>
-      </div>
-    </transition>
+        </div>
+      </transition>
+    </Teleport>
   </header>
 </template>
 
@@ -330,11 +337,14 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: $sp-5;
   overflow-y: auto;
-  padding: $sp-5 $sp-5 $sp-7;
+  // El menú cubre toda la ventana: respeta las barras del sistema en móvil.
+  padding: calc(#{$sp-5} + env(safe-area-inset-top, 0px)) $sp-5
+    calc(#{$sp-7} + env(safe-area-inset-bottom, 0px));
   background: radial-gradient(130% 80% at 85% 0%, $navy-soft 0%, $ink 60%);
 
   @include from($bp-lg) {
-    padding: $sp-6 $sp-8 $sp-8;
+    padding: calc(#{$sp-6} + env(safe-area-inset-top, 0px)) $sp-8
+      calc(#{$sp-8} + env(safe-area-inset-bottom, 0px));
     gap: $sp-6;
   }
 
